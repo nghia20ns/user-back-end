@@ -19,13 +19,13 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-app.use((req, res, next) => {
-  console.log(req);
-  res.header(`Access-Control-Allow-Origin`, `*`);
-  res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE, PATCH`);
-  res.header(`Access-Control-Allow-Headers`, `*`);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req);
+//   res.header(`Access-Control-Allow-Origin`, `*`);
+//   res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE, PATCH`);
+//   res.header(`Access-Control-Allow-Headers`, `*`);
+//   next();
+// });
 routes(app);
 app.listen(port, () => {
   console.log("Server running in port: ", port);
