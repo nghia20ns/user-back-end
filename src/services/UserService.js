@@ -71,13 +71,15 @@ export const changePasswordService = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findById(id);
-      if (user.password === data.password) {
+            const hashPassword = bcrypt.hashSync(data.password, 10);
+            const checkPassword = bcrypt.compareSync(data.password, user.password);
+      if (checkPassword) {
         resolve({
           status: "same password",
           message: "Password must not be the same as the old password",
         });
       } else {
-        const updateUser = await User.findByIdAndUpdate(id, data);
+        const updateUser = await User.findByIdAndUpdate(id, {password: hashPassword});
         if (updateUser) {
           const getUserNew = await detailUserService(id);
           resolve({
@@ -208,6 +210,7 @@ export const userUpdateService = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findById(id);
+      const hashPassword = bcrypt.hashSync(data.password, 10);
       const isCheckEmail = await User.findOne({
         email_recover: data.email_recover,
       });
@@ -221,7 +224,7 @@ export const userUpdateService = (id, data) => {
             message: "the email already exists",
           });
         } else {
-          const updateUser = await User.findByIdAndUpdate(id, data);
+          const updateUser = await User.findByIdAndUpdate(id, {email_recover: data.email_recover,password: hashPassword});
           if (updateUser) {
             const getUserNew = await detailUserService(id);
             resolve({

@@ -42,7 +42,7 @@ const userSchema = new Schema(
     role: {
       type: Number,
       unique: true,
-      default: 0,
+      default: 1,
     },
   },
   {
