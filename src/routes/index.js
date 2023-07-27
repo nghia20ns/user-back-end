@@ -3,9 +3,11 @@ import productRouter from "./ProductRoute.js";
 import transtractionRouter from "./TranstractionRoute.js";
 
 const routes = (app) => {
-  app.use("/product", productRouter);
-  app.use("/transtraction", transtractionRouter);
+  
+  app.use("/api/product", productRouter);
+  app.use("/api/transtraction", transtractionRouter);
 
-  app.use("/user", userRouter);
+  app.use("/api/user", userRouter);
+
 };
 export default routes;
