@@ -13,7 +13,7 @@ import adminMiddleware from "../MiddleWares/adminMiddleware.js";
 const router = express.Router();
 router.get("/:productId", detailsProductController);
 router.get("/getall", getProductController);
-router.post("/create",authMiddleware,createProductController);
+router.post("/create",createProductController);
 router.get("/getall/:page",authMiddleware, getProductPageController);
 router.get("/detail/:page",authMiddleware, getProductPageController);
 router.delete("/delete/:productId", deleteProductController);
