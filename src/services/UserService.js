@@ -1,38 +1,38 @@
 import { User } from "../models/UserModel.js";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import bcrypt from 'bcrypt'
+import bcrypt from "bcrypt";
 
 export const createUserService = ({ email, password }) => {
-    return new Promise(async (resolve, reject) =>{
-      try {
-      const isCheckEmail = await User.find({email: email})
-      if (isCheckEmail.length && isCheckName.length ) {
-          resolve({
-              status: 'email existed',
-              message: 'the email and name is existed'
-          })
+  return new Promise(async (resolve, reject) => {
+    try {
+      const isCheckEmail = await User.find({ email: email });
+      if (isCheckEmail.length) {
+        resolve({
+          status: "email existed",
+          message: "the email and name is existed",
+        });
       }
       //ma hoa pass
       const hashPassword = bcrypt.hashSync(password, 10);
 
       //xu ly email co hop le
-    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)
-    if (isEmail) {
-    const newUser =  await User.create({
+      const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email);
+      if (isEmail) {
+        const newUser = await User.create({
           email,
           password: hashPassword,
-      })
-      const {password, ...rest} = newUser
-      resolve({
-          status :'sign success',
-          message: 'signup success, please login',
+        });
+        const { password, ...rest } = newUser;
+        resolve({
+          status: "sign success",
+          message: "signup success, please login",
           data: {
-              email: newUser.email,
-          }
-      })
-    }else{
-    resolve({
+            email: newUser.email,
+          },
+        });
+      } else {
+        resolve({
           status: "error email",
           message: "username is not email",
         });
@@ -71,15 +71,17 @@ export const changePasswordService = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
       const user = await User.findById(id);
-            const hashPassword = bcrypt.hashSync(data.password, 10);
-            const checkPassword = bcrypt.compareSync(data.password, user.password);
+      const hashPassword = bcrypt.hashSync(data.password, 10);
+      const checkPassword = bcrypt.compareSync(data.password, user.password);
       if (checkPassword) {
         resolve({
           status: "same password",
           message: "Password must not be the same as the old password",
         });
       } else {
-        const updateUser = await User.findByIdAndUpdate(id, {password: hashPassword});
+        const updateUser = await User.findByIdAndUpdate(id, {
+          password: hashPassword,
+        });
         if (updateUser) {
           const getUserNew = await detailUserService(id);
           resolve({
@@ -224,7 +226,10 @@ export const userUpdateService = (id, data) => {
             message: "the email already exists",
           });
         } else {
-          const updateUser = await User.findByIdAndUpdate(id, {email_recover: data.email_recover,password: hashPassword});
+          const updateUser = await User.findByIdAndUpdate(id, {
+            email_recover: data.email_recover,
+            password: hashPassword,
+          });
           if (updateUser) {
             const getUserNew = await detailUserService(id);
             resolve({
@@ -269,87 +274,95 @@ const generalRefreshToken = (data) => {
 };
 
 export const loginService = ({ email, password }) => {
-  return new Promise(async (resolve, reject) =>{
-    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email)
+  return new Promise(async (resolve, reject) => {
+    const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(email);
     if (isEmail) {
-        const userDB = await User.find({email: email})
-        if (userDB.length) {
-            const checkPassword = bcrypt.compareSync(password, userDB[0].password);
-            if (checkPassword) {
-                const access_token = generalAccessToken({role: userDB[0].role, _id: userDB[0]._id} )
-                const refresh_token = generalRefreshToken({role: userDB[0].role, _id: userDB[0]._id})
-                if (userDB[0].role ===2) {
-                    resolve({
-                        status: 'login admin',
-                        data:{
-                            access_token,
-                            refresh_token
-                        }
-                    })
-                }else{
-                    resolve({
-                        status: 'login client',
-                        data:{
-                            access_token,
-                            refresh_token
-                        }
-                    })
-                }
-
-            }
+      const userDB = await User.find({ email: email });
+      if (userDB.length) {
+        const checkPassword = bcrypt.compareSync(password, userDB[0].password);
+        if (checkPassword) {
+          const access_token = generalAccessToken({
+            role: userDB[0].role,
+            _id: userDB[0]._id,
+          });
+          const refresh_token = generalRefreshToken({
+            role: userDB[0].role,
+            _id: userDB[0]._id,
+          });
+          if (userDB[0].role === 2) {
             resolve({
-                status:'error password',
-                message:'username or password is wrong'
-            })
-        }else{
-            resolve({
-                status:'not email',
-                message:'the email not existed'
-            })
-        }
-        
-  } else {
-    resolve({
-        status:'error email',
-        message:'the email not valid'
-    }) 
-    }
-})
-}
-export const refreshTokenService =(token)=>{
-  return new Promise(async (resolve, reject)=>{
-      try {
-          jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, function(err, user) {
-              if (err) {
-                  resolve(404).json({
-                      message :'the user is not auth'
-                  })
-              }
-              if (user) {
-                  const newAccessToken = generalAccessToken({isAdmin: user.isAdmin, _id: user._id})
-                  resolve({
-                      status: 'OK',
-                      access_token: newAccessToken
-                  })
-              }else{
-                  resolve({
-                      message :'the user is not auth'
-                  })
-              }
+              status: "login admin",
+              data: {
+                access_token,
+                refresh_token,
+              },
             });
-          } catch (error) {
-          reject(error)
+          } else {
+            resolve({
+              status: "login client",
+              data: {
+                access_token,
+                refresh_token,
+              },
+            });
+          }
+        }
+        resolve({
+          status: "error password",
+          message: "username or password is wrong",
+        });
+      } else {
+        resolve({
+          status: "not email",
+          message: "the email not existed",
+        });
       }
-  })
-
-}
+    } else {
+      resolve({
+        status: "error email",
+        message: "the email not valid",
+      });
+    }
+  });
+};
+export const refreshTokenService = (token) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, function (err, user) {
+        if (err) {
+          resolve(404).json({
+            message: "the user is not auth",
+          });
+        }
+        if (user) {
+          const newAccessToken = generalAccessToken({
+            isAdmin: user.isAdmin,
+            _id: user._id,
+          });
+          resolve({
+            status: "OK",
+            access_token: newAccessToken,
+          });
+        } else {
+          resolve({
+            message: "the user is not auth",
+          });
+        }
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
 
 export const changeApiKeyService = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const newApiKey = crypto.randomBytes(20).toString('hex');
-      const updateUser =  await User.findByIdAndUpdate(id, {api_key: newApiKey});
-       if (updateUser) {
+      const newApiKey = crypto.randomBytes(20).toString("hex");
+      const updateUser = await User.findByIdAndUpdate(id, {
+        api_key: newApiKey,
+      });
+      if (updateUser) {
         const getUserNew = await detailUserService(id);
         resolve({
           status: "update ok",
@@ -361,7 +374,6 @@ export const changeApiKeyService = (id) => {
           message: "the user not define",
         });
       }
-
     } catch (error) {
       reject({
         status: "error",

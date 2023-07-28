@@ -19,7 +19,7 @@ const userSchema = new Schema(
       required: true,
       default: " ",
     },
-     access_token: {
+    access_token: {
       type: String,
       unique: true,
     },
@@ -32,16 +32,12 @@ const userSchema = new Schema(
       required: true,
       unique: true,
       default: function () {
-        return crypto.randomBytes(20).toString('hex');
+        return crypto.randomBytes(20).toString("hex");
       },
     },
-    // role:
-    //   0: User has not activated,
-    //   1: User has activated,
-    //   2: User is admin
     role: {
       type: Number,
-      unique: true,
+      required: true,
       default: 0,
     },
   },
