@@ -12,13 +12,11 @@ const adminMiddleware = (req, res, next) => {
     if (err) {
       if (err.name === "TokenExpiredError") {
         return res.json({
-          status :"token expried",
+          status: "token expried",
           message: "the token is expried",
         });
-  
       }
-    }
-    else if (user.role === 2) {
+    } else if (user.role === 2) {
       next();
     } else {
       return res.json({
