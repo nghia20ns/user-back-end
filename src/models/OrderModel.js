@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const { Schema } = mongoose;
 
-const transtractionSchema = new Schema(
+const OrderSchema = new Schema(
   {
     userId: {
       type: String,
@@ -9,13 +9,14 @@ const transtractionSchema = new Schema(
     },
     quantity: {
       type: Number,
+      required: true,
     },
     provider: {
       type: String,
+      required: true,
     },
     message: {
       type: String,
-      default: " ",
     },
     status: {
       type: Number,
@@ -55,4 +56,4 @@ const transtractionSchema = new Schema(
   }
 );
 
-export const Transtraction = mongoose.model("Transtraction", transtractionSchema);
+export const Order = mongoose.model("Order", OrderSchema);
