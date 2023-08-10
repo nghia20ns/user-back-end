@@ -17,6 +17,7 @@ const OrderSchema = new Schema(
     },
     message: {
       type: String,
+      default: "none",
     },
     status: {
       type: Number,
@@ -32,6 +33,9 @@ const OrderSchema = new Schema(
         },
       },
     ],
+  },
+  {
+    timestamps: true,
   },
   {
     // Sử dụng toObject và toJSON để loại bỏ _id trong products khi dữ liệu được chuyển đổi
