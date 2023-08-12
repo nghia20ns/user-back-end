@@ -1,6 +1,6 @@
 import { Product } from "../models/ProductModel.js";
 
-export const createProductService = async (apiInput) => {
+export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
     try {
       let d = 0;
@@ -35,6 +35,41 @@ export const createProductService = async (apiInput) => {
     }
   });
 };
+export const createProductService = async (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const isCheckEmail = await Product.find({ email: data.email });
+      if (isCheckEmail.length) {
+        resolve({
+          status: "error",
+          message: "the email and name is existed",
+        });
+      }
+      //xu ly email co hop le
+      const isEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g.test(data.email);
+      if (isEmail) {
+        const newProducts = await Product.create(data);
+        resolve({
+          status: "success",
+          message: "create success!",
+          data: newProducts,
+        });
+      } else {
+        resolve({
+          status: "error",
+          message: "not email",
+        });
+      }
+    } catch (error) {
+      console.log(error.name);
+      reject({
+        status: "error",
+        message: error,
+      });
+    }
+  });
+};
+
 export const getProductService = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -89,7 +124,6 @@ export const getProductPageService = (page, search) => {
 export const detailProductService = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      console.log(productId);
       const findProduct = await Product.findById(productId);
       if (findProduct) {
         resolve({

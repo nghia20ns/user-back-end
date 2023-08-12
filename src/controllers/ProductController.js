@@ -1,17 +1,18 @@
 import {
-  createProductService,
+  createManyProductService,
   getProductService,
   getProductPageService,
   detailProductService,
   deleteProductService,
   updateProductService,
+  createProductService,
 } from "../services/ProductService.js";
 import _ from "lodash";
 
-export const createProductController = async (req, res) => {
+export const createManyProductController = async (req, res) => {
   try {
     const apiInput = req.body;
-    const response = await createProductService(apiInput);
+    const response = await createManyProductService(apiInput);
     if (response) {
       return res.json(response);
     } else {
@@ -27,7 +28,25 @@ export const createProductController = async (req, res) => {
     });
   }
 };
-
+export const createProductController = async (req, res) => {
+  try {
+    const data = req.body;
+    const response = await createProductService(data);
+    if (response) {
+      return res.json(response);
+    } else {
+      return res.json({
+        status: "error",
+        message: "lack info",
+      });
+    }
+  } catch (error) {
+    return res.status(404).json({
+      status: "err",
+      message: error,
+    });
+  }
+};
 export const getProductController = async (req, res) => {
   try {
     const response = await getProductService();

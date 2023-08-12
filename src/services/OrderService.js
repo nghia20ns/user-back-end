@@ -14,7 +14,7 @@ export const detailOrderService = (transId) => {
         });
       }
       resolve({
-        status: "no user",
+        status: "error",
         message: "user is not defined",
       });
     } catch (error) {
@@ -36,7 +36,7 @@ export const createOrderService = ({ api_key, quantity, provider, id }) => {
 
       if (!user) {
         resolve({
-          status: "err",
+          status: "error",
           message: "no user",
         });
         await session.abortTransaction();
@@ -60,7 +60,7 @@ export const createOrderService = ({ api_key, quantity, provider, id }) => {
           //----huy gd---//
           const productLack = quantity - totalProduct;
           resolve({
-            status: "lack",
+            status: "error",
             message: "Missing " + productLack + " products",
           });
         } else {
@@ -96,7 +96,7 @@ export const createOrderService = ({ api_key, quantity, provider, id }) => {
           } else {
             // ---- Cancel the transaction ----
             resolve({
-              status: "not api_key",
+              status: "error",
               message: "api_key in valid",
             });
             await session.abortTransaction();

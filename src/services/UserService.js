@@ -289,37 +289,27 @@ export const loginService = ({ email, password }) => {
             role: userDB[0].role,
             _id: userDB[0]._id,
           });
-          if (userDB[0].role === 2) {
-            resolve({
-              status: "login admin",
-              data: {
-                access_token,
-                refresh_token,
-              },
-            });
-          } else {
-            resolve({
-              status: "login client",
-              data: {
-                access_token,
-                refresh_token,
-              },
-            });
-          }
+          resolve({
+            status: "success",
+            data: {
+              access_token,
+              refresh_token,
+            },
+          });
         }
         resolve({
-          status: "error password",
+          status: "error",
           message: "username or password is wrong",
         });
       } else {
         resolve({
-          status: "not email",
+          status: "error",
           message: "the email not existed",
         });
       }
     } else {
       resolve({
-        status: "error email",
+        status: "error",
         message: "the email not valid",
       });
     }
