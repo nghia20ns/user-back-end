@@ -6,6 +6,7 @@ import {
   deleteProductService,
   updateProductService,
   createProductService,
+  buyService,
 } from "../services/ProductService.js";
 import _ from "lodash";
 
@@ -119,6 +120,23 @@ export const updateProductController = async (req, res) => {
 
   if (id) {
     const response = await updateProductService(id, data);
+    return res.json(response);
+  } else {
+    return res.json({
+      status: "error",
+      message: "user id is not valid",
+    });
+  }
+};
+
+export const buyController = async (req, res) => {
+  const data = req.query;
+  if (data) {
+    const api_key = data.api_key;
+    const quantity = data.quantity;
+    const provider = data.provider;
+
+    const response = await buyService(api_key, quantity, provider);
     return res.json(response);
   } else {
     return res.json({

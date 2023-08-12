@@ -6,10 +6,9 @@ import { User } from "../models/UserModel.js";
 export const detailOrderService = (transId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const findTrans = await Order.findById(transId);
+      const findTrans = await Order.findById(transId).select("-products._id");
       if (findTrans) {
         resolve({
-          status: "find success",
           data: findTrans,
         });
       }

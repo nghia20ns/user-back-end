@@ -1,4 +1,8 @@
 import { Product } from "../models/ProductModel.js";
+import { User } from "../models/UserModel.js";
+import mongoose from "mongoose";
+import { Order } from "../models/OrderModel.js";
+import { detailOrderService } from "./OrderService.js";
 
 export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
@@ -193,6 +197,92 @@ export const updateProductService = (id, data) => {
         });
       }
     } catch (error) {
+      reject({
+        status: "error",
+        message: error,
+      });
+    }
+  }).catch((e) => e);
+};
+export const buyService = async (api_key, quantity, provider) => {
+  return new Promise(async (resolve, reject) => {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
+    try {
+      const user = await User.findOne({ api_key: api_key });
+
+      if (!user) {
+        resolve({
+          status: "error",
+          message: "api_key in valid",
+        });
+        await session.abortTransaction();
+      } else {
+        const userId = user.id;
+        const newTrans = await Order.create({
+          userId,
+          quantity,
+          provider,
+        });
+        //change string to number
+        const quantityNum = parseInt(quantity);
+
+        //find total quantity product status = 0 in db
+        const totalProduct = await Product.count({
+          provider: provider,
+          status: 0,
+        });
+        if (totalProduct < quantityNum) {
+          //----huy gd---//
+          const productLack = quantity - totalProduct;
+          resolve({
+            status: "error",
+            message: "Missing " + productLack + " products",
+          });
+        } else {
+          if (api_key === user.api_key) {
+            //find products
+            const products = await Product.find(
+              { provider: provider, status: 0 },
+              { email: 1, password: 1 }
+            ).limit(quantity);
+            const productIds = products.map((product) => product._id);
+            await Order.findByIdAndUpdate(
+              newTrans.id,
+              {
+                status: 1,
+                products: products,
+                message: "success",
+              },
+              { session }
+            );
+            await Product.updateMany(
+              { _id: { $in: productIds } },
+              { status: 1, tranId: newTrans.id },
+              { session }
+            );
+            //transaction success
+            await session.commitTransaction();
+            session.endSession();
+            const getTransNew = await detailOrderService(newTrans.id);
+            resolve({
+              status: "success",
+              data: getTransNew,
+            });
+          } else {
+            // ---- Cancel the transaction ----
+            resolve({
+              status: "error",
+              message: "api_key in valid",
+            });
+            await session.abortTransaction();
+          }
+        }
+      }
+    } catch (error) {
+      await session.abortTransaction();
+      session.endSession();
       reject({
         status: "error",
         message: error,
