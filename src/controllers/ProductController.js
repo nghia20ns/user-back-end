@@ -7,6 +7,7 @@ import {
   updateProductService,
   createProductService,
   buyService,
+  getAccountService,
 } from "../services/ProductService.js";
 import _ from "lodash";
 
@@ -142,6 +143,26 @@ export const buyController = async (req, res) => {
     return res.json({
       status: "error",
       message: "user id is not valid",
+    });
+  }
+};
+export const getAccountController = async (req, res) => {
+  try {
+    const query = req.query;
+    const { page, limit } = req.params;
+    const response = await getAccountService(page, limit, query);
+    if (response) {
+      return res.status(200).json(response);
+    } else {
+      return res.json({
+        status: "err",
+        message: "server is problem",
+      });
+    }
+  } catch (error) {
+    return res.status(404).json({
+      status: "err",
+      message: error,
     });
   }
 };

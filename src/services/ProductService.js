@@ -3,6 +3,7 @@ import { User } from "../models/UserModel.js";
 import mongoose from "mongoose";
 import { Order } from "../models/OrderModel.js";
 import { detailOrderService } from "./OrderService.js";
+import e from "express";
 
 export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
@@ -125,6 +126,39 @@ export const getProductPageService = (page, search) => {
     }
   });
 };
+const Sort = (message) => {
+  if (message === "ascending") {
+    return 1;
+  } else if (message === "decrease") {
+    return -1;
+  } else null;
+};
+export const getAccountService = (page, limit, query) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const totalProduct = await Product.count();
+
+      const allProduct = await Product.find({
+        email: { $regex: query.search, $options: "i" },
+      })
+        .sort({ status: Sort(query.sortStatus) })
+        .sort({ email: Sort(query.sortEmail) })
+
+        .skip((page - 1) * limit)
+        .limit(limit);
+      resolve({
+        data: allProduct,
+        total: totalProduct,
+        page: Math.ceil(totalProduct / limit),
+      });
+    } catch (error) {
+      reject({
+        status: "err",
+        message: error,
+      });
+    }
+  });
+};
 export const detailProductService = (productId) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -147,6 +181,7 @@ export const detailProductService = (productId) => {
     }
   }).catch((e) => e);
 };
+
 export const deleteProductService = (_id) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -266,9 +301,16 @@ export const buyService = async (api_key, quantity, provider) => {
             await session.commitTransaction();
             session.endSession();
             const getTransNew = await detailOrderService(newTrans.id);
+            const emails = getTransNew.data.products;
             resolve({
-              status: "success",
-              data: getTransNew,
+              Code: getTransNew.data.status,
+              message: "thành công",
+              data: {
+                TransId: getTransNew.data._id,
+                Product: getTransNew.data.provider,
+                Quantity: getTransNew.data.quantity,
+                Emails: emails,
+              },
             });
           } else {
             // ---- Cancel the transaction ----
