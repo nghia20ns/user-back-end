@@ -3,7 +3,6 @@ import { User } from "../models/UserModel.js";
 import mongoose from "mongoose";
 import { Order } from "../models/OrderModel.js";
 import { detailOrderService } from "./OrderService.js";
-import e from "express";
 
 export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
@@ -136,13 +135,17 @@ const Sort = (message) => {
 export const getAccountService = (page, limit, query) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const totalProduct = await Product.count();
+      const totalProduct = await Product.count({
+        email: { $regex: query.search, $options: "i" },
+      });
 
       const allProduct = await Product.find({
         email: { $regex: query.search, $options: "i" },
       })
+        .sort({ provider: Sort(query.sortProvider) })
         .sort({ status: Sort(query.sortStatus) })
         .sort({ email: Sort(query.sortEmail) })
+        .sort({ createdAt: 1 })
 
         .skip((page - 1) * limit)
         .limit(limit);
@@ -301,11 +304,21 @@ export const buyService = async (api_key, quantity, provider) => {
             await session.commitTransaction();
             session.endSession();
             const getTransNew = await detailOrderService(newTrans.id);
-            const emails = getTransNew.data.products;
+            let email;
+            const emails = [];
+            for (const i of getTransNew.data.products) {
+              email = {
+                Email: i.email,
+                Password: i.password,
+              };
+              emails.push(email);
+            }
+
+            // const emails = getTransNew.data.products;
             resolve({
               Code: getTransNew.data.status,
-              message: "thành công",
-              data: {
+              Message: "thành công",
+              Data: {
                 TransId: getTransNew.data._id,
                 Product: getTransNew.data.provider,
                 Quantity: getTransNew.data.quantity,
