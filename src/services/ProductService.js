@@ -278,18 +278,43 @@ export const buyService = async (api_key, quantity, provider) => {
         //change string to number
         const quantityNum = parseInt(quantity);
         //find total quantity product status = 0 in db
+
         const totalProduct = await Product.count({
           provider: provider,
           status: 0,
-          $expr: {
-            $gt: [
-              {
-                $subtract: [new Date(), "$createdAt"],
+          $or: [
+            {
+              $expr: {
+                $gt: [
+                  {
+                    $subtract: [new Date(), "$createdAt"],
+                  },
+                  3600000,
+                ],
               },
-              3600000,
-            ],
-          },
+            },
+            { email_recover: { $ne: null } },
+          ],
         });
+        console.log(totalProduct);
+        //   provider: provider,
+        //   status: 0,
+        //   $or: [
+        //     {
+        //       $expr: {
+        //         $gt: [
+        //           {
+        //             $subtract: [new Date(), "$createdAt"]
+        //           },
+        //           3600000
+        //         ]
+        //       }
+        //     },
+        //     {
+        //       email_recover: { $ne: null }
+        //     }
+        //   ]
+        // });
 
         if (totalProduct < quantityNum) {
           //----huy gd---//
@@ -304,14 +329,19 @@ export const buyService = async (api_key, quantity, provider) => {
             const products = await Product.find({
               provider: provider,
               status: 0,
-              $expr: {
-                $gt: [
-                  {
-                    $subtract: [new Date(), "$createdAt"],
+              $or: [
+                {
+                  $expr: {
+                    $gt: [
+                      {
+                        $subtract: [new Date(), "$createdAt"],
+                      },
+                      3600000,
+                    ],
                   },
-                  3600000,
-                ],
-              },
+                },
+                { email_recover: { $ne: null } },
+              ],
             }).limit(quantity);
             const productIds = products.map((product) => product._id);
             await Order.findByIdAndUpdate(
