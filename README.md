@@ -68,7 +68,7 @@ When the front-end sends a request to the back-end, it goes through the followin
 # API
 ## API Create
 REQUEST
-`http://45.77.215.103/api/products/create?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3`
+`POST http://45.77.215.103/api/products/create?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3`
 
 BODY
 ```json 
@@ -96,11 +96,11 @@ RESPONSE
 }
 ```
 ### API BY MAIL
-`http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY`
+`GET http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY`
 
 
 REQUEST:
-`http://45.77.215.103/api/products/buy?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3&provider=hotmail&quantity=3`
+`GET http://45.77.215.103/api/products/buy?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3&provider=hotmail&quantity=3`
 
 RESPONSE
 ```json
