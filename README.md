@@ -95,7 +95,7 @@ RESPONSE
     }
 }
 ```
-###API BY MAIL
+### API BY MAIL
 `http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY`
 
 
