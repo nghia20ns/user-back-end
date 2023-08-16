@@ -250,6 +250,7 @@ export const updateProductService = (id, data) => {
     }
   }).catch((e) => e);
 };
+
 const mutex = new Mutex();
 export const buyService = async (api_key, quantity, provider) => {
   return new Promise(async (resolve, reject) => {
@@ -280,7 +281,16 @@ export const buyService = async (api_key, quantity, provider) => {
         const totalProduct = await Product.count({
           provider: provider,
           status: 0,
+          $expr: {
+            $gt: [
+              {
+                $subtract: [new Date(), "$createdAt"],
+              },
+              3600000,
+            ],
+          },
         });
+
         if (totalProduct < quantityNum) {
           //----huy gd---//
           const productLack = quantity - totalProduct;
@@ -291,10 +301,18 @@ export const buyService = async (api_key, quantity, provider) => {
         } else {
           if (api_key === user.api_key) {
             //find products
-            const products = await Product.find(
-              { provider: provider, status: 0 },
-              { email: 1, password: 1 }
-            ).limit(quantity);
+            const products = await Product.find({
+              provider: provider,
+              status: 0,
+              $expr: {
+                $gt: [
+                  {
+                    $subtract: [new Date(), "$createdAt"],
+                  },
+                  3600000,
+                ],
+              },
+            }).limit(quantity);
             const productIds = products.map((product) => product._id);
             await Order.findByIdAndUpdate(
               newTrans.id,
