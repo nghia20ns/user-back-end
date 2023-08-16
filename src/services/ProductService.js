@@ -3,6 +3,7 @@ import { User } from "../models/UserModel.js";
 import mongoose from "mongoose";
 import { Order } from "../models/OrderModel.js";
 import { detailOrderService } from "./OrderService.js";
+import { Mutex, Semaphore, withTimeout } from "async-mutex";
 
 export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
@@ -242,8 +243,11 @@ export const updateProductService = (id, data) => {
     }
   }).catch((e) => e);
 };
+const mutex = new Mutex();
 export const buyService = async (api_key, quantity, provider) => {
   return new Promise(async (resolve, reject) => {
+    const release = await mutex.acquire();
+
     const session = await mongoose.startSession();
     session.startTransaction();
 
@@ -265,7 +269,6 @@ export const buyService = async (api_key, quantity, provider) => {
         });
         //change string to number
         const quantityNum = parseInt(quantity);
-
         //find total quantity product status = 0 in db
         const totalProduct = await Product.count({
           provider: provider,
@@ -342,6 +345,8 @@ export const buyService = async (api_key, quantity, provider) => {
         status: "error",
         message: error,
       });
+    } finally {
+      release();
     }
   }).catch((e) => e);
 };
