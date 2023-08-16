@@ -65,5 +65,68 @@ When the front-end sends a request to the back-end, it goes through the followin
 3. Next, the request reaches the controller to fetch the necessary data.
 4. The controller forwards the request to a service to process the data. This service retrieves data from the database and performs required processing.
 5. Finally, once the processing is complete, the data is sent back to the front-end through a response from the back-end.
-   
-   
+# API
+## API Create
+
+```json
+REQUEST
+http://45.77.215.103/api/products/create?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3
+
+BODY 
+{
+    "email": "halo@hotmail.com",
+    "password": "12345",
+    "provider": "hotmail"
+}
+```
+
+```json
+RESPONSE
+{
+    "status": "success",
+    "message": "create success!",
+    "data": {
+        "email": "halo@hotmail.com",
+        "password": "12345",
+        "provider": "hotmail",
+        "status": 0,
+        "_id": "64dc54479d38a8f1e764c2e0",
+        "createdAt": "2023-08-16T04:44:55.859Z",
+        "updatedAt": "2023-08-16T04:44:55.859Z",
+        "__v": 0
+    }
+}
+```
+###API BY MAIL
+http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY
+
+```json
+REQUEST
+http://45.77.215.103/api/products/buy?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3&provider=hotmail&quantity=3
+```
+```json
+RESPONSE
+{
+    "Code": 1,
+    "Message": "thành công",
+    "Data": {
+        "TransId": "64dc58159d38a8f1e764c2e3",
+        "Product": "hotmail",
+        "Quantity": 3,
+        "Emails": [
+            {
+                "Email": "usnbher1@hotmail.com",
+                "Password": "12345"
+            },
+            {
+                "Email": "bhurr@hotmail.com",
+                "Password": "12345"
+            },
+            {
+                "Email": "halo@hotmail.com",
+                "Password": "12345"
+            }
+        ]
+    }
+}
+```
