@@ -67,21 +67,19 @@ When the front-end sends a request to the back-end, it goes through the followin
 5. Finally, once the processing is complete, the data is sent back to the front-end through a response from the back-end.
 # API
 ## API Create
-
-```json
 REQUEST
-http://45.77.215.103/api/products/create?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3
+`http://45.77.215.103/api/products/create?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3`
 
-BODY 
+BODY
+```json 
 {
     "email": "halo@hotmail.com",
     "password": "12345",
     "provider": "hotmail"
 }
 ```
-
-```json
 RESPONSE
+```json
 {
     "status": "success",
     "message": "create success!",
@@ -98,14 +96,14 @@ RESPONSE
 }
 ```
 ###API BY MAIL
-http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY
+`http://45.77.215.103/api/products/buy?api_key=API_KEY&provider=PROVIDER&quantity=QUANTITY`
 
-```json
-REQUEST
-http://45.77.215.103/api/products/buy?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3&provider=hotmail&quantity=3
-```
-```json
+
+REQUEST:
+`http://45.77.215.103/api/products/buy?api_key=9bccae13f8f1e9ae10b76d3befbfda1ae3e6f6e3&provider=hotmail&quantity=3`
+
 RESPONSE
+```json
 {
     "Code": 1,
     "Message": "thành công",
