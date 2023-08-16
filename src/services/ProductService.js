@@ -32,7 +32,6 @@ export const createManyProductService = async (apiInput) => {
         });
       }
     } catch (error) {
-      console.log(error.name);
       reject({
         status: "err",
         message: error,
