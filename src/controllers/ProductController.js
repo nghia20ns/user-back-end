@@ -33,7 +33,9 @@ export const createManyProductController = async (req, res) => {
 export const createProductController = async (req, res) => {
   try {
     const data = req.body;
-    const response = await createProductService(data);
+    const { api_key } = req.query;
+
+    const response = await createProductService(data, api_key);
     if (response) {
       return res.json(response);
     } else {
