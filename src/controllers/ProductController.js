@@ -1,7 +1,5 @@
 import {
   createManyProductService,
-  getProductService,
-  getProductPageService,
   detailProductService,
   deleteProductService,
   updateProductService,
@@ -42,46 +40,6 @@ export const createProductController = async (req, res) => {
       return res.json({
         status: "error",
         message: "lack info",
-      });
-    }
-  } catch (error) {
-    return res.status(404).json({
-      status: "err",
-      message: error,
-    });
-  }
-};
-export const getProductController = async (req, res) => {
-  try {
-    const response = await getProductService();
-    if (response) {
-      return res.status(200).json(response);
-    } else {
-      return res.json({
-        status: "err",
-        message: "server is problem",
-      });
-    }
-  } catch (error) {
-    return res.status(404).json({
-      status: "err",
-      message: error,
-    });
-  }
-};
-export const getProductPageController = async (req, res) => {
-  try {
-    const search = req.query.search;
-
-    const { page } = req.params;
-
-    const response = await getProductPageService(page, search);
-    if (response) {
-      return res.status(200).json(response);
-    } else {
-      return res.json({
-        status: "err",
-        message: "server is problem",
       });
     }
   } catch (error) {

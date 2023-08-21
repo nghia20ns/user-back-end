@@ -80,64 +80,12 @@ export const createProductService = async (data, api_key) => {
     }
   });
 };
-
-export const getProductService = () => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const totalProduct = await Product.count();
-      const allProduct = await Product.find().sort({ status: 1 });
-      resolve({
-        data: allProduct,
-        total: totalProduct,
-      });
-    } catch (error) {
-      reject({
-        status: "err",
-        message: error,
-      });
-    }
-  });
-};
-export const getProductPageService = (page, search) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const totalProduct = await Product.count();
-
-      if (search) {
-        const allProduct = await Product.find({
-          email: { $regex: search, $options: "i" },
-        })
-          .skip((page - 1) * 10)
-          .limit(10);
-        resolve({
-          data: allProduct,
-          total: totalProduct,
-          page: Math.ceil(totalProduct / 10),
-        });
-      } else {
-        const allProduct = await Product.find()
-          .skip((page - 1) * 10)
-          .limit(10);
-        resolve({
-          data: allProduct,
-          total: totalProduct,
-          page: Math.ceil(totalProduct / 10),
-        });
-      }
-    } catch (error) {
-      reject({
-        status: "err",
-        message: error,
-      });
-    }
-  });
-};
 const Sort = (message) => {
   if (message === "ascending") {
     return 1;
   } else if (message === "decrease") {
     return -1;
-  } else null;
+  }
 };
 export const getAccountService = (page, limit, query) => {
   return new Promise(async (resolve, reject) => {
@@ -146,14 +94,25 @@ export const getAccountService = (page, limit, query) => {
         email: { $regex: query.search, $options: "i" },
       });
 
+      //insert object sortCriteria
+      const sortCriteria = {};
+      if (query.sortCreatedAt) {
+        sortCriteria.createdAt = Sort(query.sortCreatedAt);
+      }
+      if (query.sortEmail) {
+        sortCriteria.email = Sort(query.sortEmail);
+      }
+      if (query.sortProvider) {
+        sortCriteria.provider = Sort(query.sortProvider);
+      }
+      if (query.sortStatus) {
+        sortCriteria.status = Sort(query.sortStatus);
+      }
+
       const allProduct = await Product.find({
         email: { $regex: query.search, $options: "i" },
       })
-        .sort({ provider: Sort(query.sortProvider) })
-        .sort({ status: Sort(query.sortStatus) })
-        .sort({ email: Sort(query.sortEmail) })
-        .sort({ createdAt: 1 })
-
+        .sort(sortCriteria)
         .skip((page - 1) * limit)
         .limit(limit);
       resolve({
