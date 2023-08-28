@@ -173,12 +173,10 @@ export const getAccountService = (page, limit, query) => {
       } else if (query.createdAt === "10d") {
         const { startDate, endDate } = getStartAndEndDatesAgo(10, "days");
         filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
-      } else if (query.createdAt === "1m") {
+      } else if (query.createdAt === "1month") {
         const { startDate, endDate } = getStartAndEndDatesAgo(1, "months");
         filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
       }
-      console.log(query);
-
       //query
       const totalProduct = await Product.count({
         $and: filters,
