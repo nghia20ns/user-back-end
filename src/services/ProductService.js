@@ -87,6 +87,36 @@ const Sort = (message) => {
     return -1;
   }
 };
+const getStartAndEndDatesAgo = (amount, unit) => {
+  const currentDate = new Date();
+  let startDate, endDate;
+
+  if (unit === "days") {
+    startDate = new Date(currentDate);
+    startDate.setDate(currentDate.getDate() - amount);
+    endDate = currentDate;
+  } else if (unit === "months") {
+    startDate = new Date(currentDate);
+    startDate.setMonth(currentDate.getMonth() - amount);
+    endDate = currentDate;
+  } else if (unit === "years") {
+    startDate = new Date(currentDate);
+    startDate.setFullYear(currentDate.getFullYear() - amount);
+    endDate = currentDate;
+  } else if (unit === "hours") {
+    startDate = new Date(currentDate);
+    startDate.setHours(currentDate.getHours() - amount);
+    endDate = currentDate;
+  } else if (unit === "minutes") {
+    startDate = new Date(currentDate);
+    startDate.setMinutes(currentDate.getMinutes() - amount);
+    endDate = currentDate;
+  } else {
+    throw new Error("Invalid time unit");
+  }
+
+  return { startDate, endDate };
+};
 export const getAccountService = (page, limit, query) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -128,6 +158,28 @@ export const getAccountService = (page, limit, query) => {
       } else if (query.status === "notSoldYet") {
         filters.push({ status: 0 });
       }
+      if (query.createdAt === "1m") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(1, "minutes");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      } else if (query.createdAt === "1h") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(1, "hours");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      } else if (query.createdAt === "1d") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(1, "days");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      } else if (query.createdAt === "3d") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(3, "days");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      } else if (query.createdAt === "10d") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(10, "days");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      } else if (query.createdAt === "1m") {
+        const { startDate, endDate } = getStartAndEndDatesAgo(1, "months");
+        filters.push({ createdAt: { $gte: startDate, $lte: endDate } });
+      }
+      console.log(query);
+
+      //query
       const totalProduct = await Product.count({
         $and: filters,
       });
