@@ -3,7 +3,7 @@ import { User } from "../models/UserModel.js";
 import mongoose from "mongoose";
 import { Order } from "../models/OrderModel.js";
 import { detailOrderService } from "./OrderService.js";
-import { Mutex, Semaphore, withTimeout } from "async-mutex";
+import { Mutex } from "async-mutex";
 
 export const createManyProductService = async (apiInput) => {
   return new Promise(async (resolve, reject) => {
@@ -90,10 +90,6 @@ const Sort = (message) => {
 export const getAccountService = (page, limit, query) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const totalProduct = await Product.count({
-        email: { $regex: query.search, $options: "i" },
-      });
-
       //insert object sortCriteria
       const sortCriteria = {};
       if (query.sortCreatedAt) {
@@ -109,8 +105,35 @@ export const getAccountService = (page, limit, query) => {
         sortCriteria.status = Sort(query.sortStatus);
       }
 
+      //filter
+      const filters = [{}];
+      if (query.search) {
+        filters.push({ email: { $regex: query.search, $options: "i" } });
+      }
+      if (query.provider) {
+        filters.push({ provider: query.provider });
+      }
+      if (query.information === "notAvailable") {
+        filters.push({ information: "" });
+      } else if (query.information === "available") {
+        filters.push({ information: { $ne: "" } });
+      }
+      if (query.recoverEmail === "notAvailable") {
+        filters.push({ email_recover: "" });
+      } else if (query.recoverEmail === "available") {
+        filters.push({ email_recover: { $ne: "" } });
+      }
+      if (query.status === "sold") {
+        filters.push({ status: 1 });
+      } else if (query.status === "notSoldYet") {
+        filters.push({ status: 0 });
+      }
+      const totalProduct = await Product.count({
+        $and: filters,
+      });
+
       const allProduct = await Product.find({
-        email: { $regex: query.search, $options: "i" },
+        $and: filters,
       })
         .sort(sortCriteria)
         .skip((page - 1) * limit)

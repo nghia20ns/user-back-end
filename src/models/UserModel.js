@@ -17,14 +17,6 @@ const userSchema = new Schema(
     email_recover: {
       type: String,
     },
-    access_token: {
-      type: String,
-      unique: true,
-    },
-    refresh_token: {
-      type: String,
-      unique: true,
-    },
     api_key: {
       type: String,
       required: true,

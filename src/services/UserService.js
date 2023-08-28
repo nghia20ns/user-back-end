@@ -289,6 +289,7 @@ export const loginService = ({ email, password }) => {
             role: userDB[0].role,
             _id: userDB[0]._id,
           });
+
           resolve({
             status: "success",
             data: {
