@@ -3,12 +3,14 @@ import mongoose from "mongoose";
 import * as dotenv from "dotenv";
 import routes from "./routes/index.js";
 import cors from "cors";
+
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
+app.use(express.static("upload"));
 
 //connect MongoDB
 mongoose
@@ -22,6 +24,7 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
 app.use((_, res, next) => {
   res.header(`Access-Control-Allow-Origin`, `*`);
   res.header(`Access-Control-Allow-Methods`, `GET,PUT,POST,DELETE, PATCH`);

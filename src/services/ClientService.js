@@ -1,7 +1,67 @@
 import { User } from "../models/UserModel.js";
 import jwt from "jsonwebtoken";
 import { Product } from "../models/ProductModel.js";
+import bcrypt from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import path from "path"; // Import module path
 
+export const uploadProfileService = async (file) => {
+  return new Promise((resolve, reject) => {
+    const uniqueFileName = `${uuidv4()}.${file.originalname.split(".").pop()}`;
+    fs.writeFile(`./upload/${uniqueFileName}`, file.buffer, (err) => {
+      if (err) {
+        reject("Error while uploading file.");
+      } else {
+        resolve("File uploaded successfully.");
+      }
+    });
+  });
+};
+
+export const changePasswordService = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await User.findById(id);
+      const hashPassword = bcrypt.hashSync(data.newPassword, 10);
+      const checkPassword = bcrypt.compareSync(data.newPassword, user.password);
+      const check = bcrypt.compareSync(data.oldPassword, user.password);
+      if (!check) {
+        resolve({
+          status: "error",
+          message: "old password not define",
+        });
+      } else {
+        if (checkPassword) {
+          resolve({
+            status: "error",
+            message: "Password must not be the same as the old password",
+          });
+        } else {
+          const updateUser = await User.findByIdAndUpdate(id, {
+            password: hashPassword,
+          });
+          if (updateUser) {
+            resolve({
+              status: "success",
+              message: "update susses",
+            });
+          } else {
+            resolve({
+              status: "error",
+              message: "the user not define",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      reject({
+        status: "error",
+        message: error,
+      });
+    }
+  }).catch((e) => e);
+};
 export const getInformationService = (id) => {
   return new Promise(async (resolve, reject) => {
     try {

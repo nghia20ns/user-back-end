@@ -80,6 +80,7 @@ export const changePasswordController = async (req, res) => {
   try {
     const { id } = req.params;
     const data = req.body;
+    console.log(data);
     if (id) {
       const response = await changePasswordService(id, data);
       if (response) {
@@ -202,26 +203,24 @@ export const loginController = async (req, res) => {
     });
   }
 };
-export const userRefreshTokenController = async(req, res)=>{
+export const userRefreshTokenController = async (req, res) => {
   try {
-      const refreshToken = req.headers.authorization.split(' ')[1]
-      if (refreshToken) {
-          const response = await refreshTokenService(refreshToken)
-          return res.status(200).json(response)
-      }else{
-          return res.json({
-              message: 'the refresh token is not valid'
-          })
-      }
+    const refreshToken = req.headers.authorization.split(" ")[1];
+    if (refreshToken) {
+      const response = await refreshTokenService(refreshToken);
+      return res.status(200).json(response);
+    } else {
+      return res.json({
+        message: "the refresh token is not valid",
+      });
+    }
   } catch (error) {
-      return res.status(404).json({
-          status: 'err',
-          message: error
-      })
-      
+    return res.status(404).json({
+      status: "err",
+      message: error,
+    });
   }
-
-}
+};
 export const changeApiKeyController = async (req, res) => {
   try {
     const { id } = req.params;

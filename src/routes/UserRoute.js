@@ -30,5 +30,4 @@ router.post(
 export default router;
 
 router.get("/:userId", authMiddleware, detailsUserController);
-router.patch("/changePassword/:id", changePasswordController);
 router.patch("/changeApiKey/:id", authMiddleware, changeApiKeyController);
